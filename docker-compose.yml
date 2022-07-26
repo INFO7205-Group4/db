@@ -1,19 +1,25 @@
 version: '3'
 services:
   flyway:
-    image: flyway/flyway:6.3.1
-    command: -configFiles=/flyway/conf/flyway.config -locations=filesystem:/flyway/sql -connectRetries=60 migrate
+    image: flyway/flyway:9.0.0
+    command: -configFiles=/flyway/conf/flyway.config -locations=filesystem:/flyway/sql -connectRetries=60 -outputType=json  migrate 
     volumes:
-      - ${PWD}/sql_versions:/flyway/sql
-      - ${PWD}/docker-flyway.config:/flyway/conf/flyway.config
+      - ./sql_versions:/flyway/sql
+      - ./docker-flyway.config:/flyway/conf/flyway.config
+    environment:
+    - FLYWAY_URL=jdbc:postgresql://${Hostname}:${Port}/${DBName}
+    - FLYWAY_USER=${Username}
+    - FLYWAY_PASSWORD=${Password}
+    - FLYWAY_SCHEMAS=${Schema}
+    
     depends_on:
       - postgres
   postgres:
-    image: postgres:14
+    image: postgres:14.4-alpine
     restart: always
     ports:
     - "5432:5432"
     environment:
-    - POSTGRES_USER=postgres
-    - POSTGRES_PASSWORD=123Fall@2021
-    - POSTGRES_DB=todo
+    - POSTGRES_USER=${Username}
+    - POSTGRES_PASSWORD=${Password}
+    - POSTGRES_DB=${DBName}

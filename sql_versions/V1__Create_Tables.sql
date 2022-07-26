@@ -1,0 +1,85 @@
+CREATE TABLE IF NOT EXISTS Users(
+   UserId SERIAL PRIMARY KEY,
+   FName           TEXT    NOT NULL,
+   MName           TEXT    ,
+   LName           TEXT    NOT NULL,
+   EmailAddress    TEXT    NOT NULL UNIQUE,
+   UserPassword        char(60)     NOT NULL,
+   EmailValidated  Boolean     default false,
+   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+CREATE TABLE IF NOT EXISTS List(
+   List_Id SERIAL PRIMARY KEY,
+   List_Name     TEXT    NOT NULL,
+   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   UserId INT,
+   CONSTRAINT fk_user
+      FOREIGN KEY(userid) 
+	  REFERENCES users(userid)
+);
+CREATE TABLE IF NOT EXISTS Task(
+   Task_Id SERIAL PRIMARY KEY,
+   Summary varchar(50)    NOT NULL,
+   Task_Name varchar(20)    NOT NULL,
+   DueDate  TIMESTAMP WITH TIME ZONE  NOT NULL,
+   Task_Priority INT default 0,
+   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   List_Id INT,
+   CONSTRAINT fk_list
+      FOREIGN KEY(List_Id) 
+	  REFERENCES List(List_Id),
+   Task_State INT default 0
+);
+-- -- CREATE TABLE IF NOT EXISTS Attachment(
+-- --    Attachment_Id SERIAL PRIMARY KEY,
+-- --    Attachment_Name varchar(20)    NOT NULL,
+-- --    Attached_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+-- --    Attachment_Size 
+-- --    Task_Id INT,
+-- --       FOREIGN KEY(Task_Id) 
+-- -- 	  REFERENCES Task(Task_Id)
+-- -- );
+CREATE TABLE IF NOT EXISTS Tag(
+   Tag_Id SERIAL PRIMARY KEY,
+   Tag_Name varchar(20)    NOT NULL,
+   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   UserId INT,
+   CONSTRAINT fk_tag
+      FOREIGN KEY(UserId) 
+	  REFERENCES Users(UserId)
+);
+
+CREATE TABLE task_tag (
+  Task_Id    int REFERENCES Task (Task_Id) ON UPDATE CASCADE ON DELETE CASCADE
+, Tag_Id int REFERENCES Tag (Tag_Id) ON UPDATE CASCADE
+, CONSTRAINT task_tag_pkey PRIMARY KEY (Task_Id, Tag_Id)
+);
+
+CREATE TABLE IF NOT EXISTS Comment(
+   Comment_Id SERIAL PRIMARY KEY,
+   Comment text    NOT NULL,
+   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   Task_Id INT,
+   CONSTRAINT fk_comment
+      FOREIGN KEY(Task_Id) 
+	  REFERENCES Task(Task_Id)
+);
+
+CREATE TABLE IF NOT EXISTS Reminder(
+   Reminder_Id SERIAL PRIMARY KEY,
+   Reminder_DateTime  TIMESTAMP WITH TIME ZONE  NOT NULL,
+   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   Task_Id INT,
+   CONSTRAINT fk_reminder
+      FOREIGN KEY(Task_Id) 
+	  REFERENCES Task(Task_Id)
+);
+
+
+
