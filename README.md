@@ -1,2 +1,2 @@
 # db
-This repo will contain all your database migration-related code
+This repo will contain all your database migration-related code.
