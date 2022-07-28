@@ -1,0 +1,2 @@
+#!/bin/sh
+flyway migrate -url="${FLYWAY_URL}" -defaultSchema=${FLYWAY_SCHEMAS} -user="${FLYWAY_USERNAME}" -password="${FLYWAY_PASSWORD}" -locations="filesystem:/flyway/migrations" -connectRetries=60 -outputType=json
