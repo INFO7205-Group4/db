@@ -93,12 +93,14 @@ Updated_AtTime - Cannot be NULL and TIMESTAMP WITH TIME ZONE(TIMESTAMPTZ) dataty
 Stores Current timestamp value of DB server if there's null value. Updated everytime when there is
 a change in the records
 
+Task_State - Denotes the state of the task whether TODO, COMPLETE, OVERDUE(0,1,2)
+
 List_Id - Foreign key
 */ 
 CREATE TABLE IF NOT EXISTS Task(
    Task_Id SERIAL PRIMARY KEY,
    Task_Summary varchar(50),
-   Task_Name varchar(20)  NOT NULL,
+   Task_Name varchar(20) ,
    DueDate  TIMESTAMP WITH TIME ZONE,
    Task_Priority SMALLINT default 0 check (Task_Priority in (0,1,2)),
    Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
