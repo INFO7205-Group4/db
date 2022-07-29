@@ -17,9 +17,7 @@ ENV FLYWAY_SCHEMAS="$Schema"
 
 #Copy the migration script fom local to container
 COPY ./sql_versions /flyway/migrations/
-
-#Copy the Bash script fom local to container
-COPY ./RunMigration.sh /flyway/RunMigration.sh
 ENTRYPOINT exec flyway migrate -url="${FLYWAY_URL}" -defaultSchema=${FLYWAY_SCHEMAS} -user="${FLYWAY_USERNAME}" -password="${FLYWAY_PASSWORD}" -locations="filesystem:/flyway/migrations" -connectRetries=60 -outputType=json
-# ENTRYPOINT ["/flyway/RunMigration.sh"]
+
+
 
