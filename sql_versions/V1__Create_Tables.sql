@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS Users(
    EmailAddress    varchar(50)    NOT NULL UNIQUE  CHECK (EmailAddress ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
    UserPassword    varchar     NOT NULL  ,
    EmailValidated  Boolean     default false,
+   EmailSentTime   TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
    Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
    Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -100,7 +101,7 @@ List_Id - Foreign key
 CREATE TABLE IF NOT EXISTS Task(
    Task_Id SERIAL PRIMARY KEY,
    Task_Summary varchar(50),
-   Task_Name varchar(20) ,
+   Task_Name varchar(20) NOT NULL ,
    DueDate  TIMESTAMP WITH TIME ZONE,
    Task_Priority SMALLINT default 0 check (Task_Priority in (0,1,2)),
    Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
