@@ -1,23 +1,15 @@
 # Get image "flyway" from Flyway's repository
-FROM flyway/flyway:9.0.0
-
-# Argument to be passed from docker build command 
-ARG Hostname
-ARG Port
-ARG DBName
-ARG Username
-ARG Password
-ARG Schema
+FROM flyway/flyway:latest-alpine
 
 #Environment variables to be sent to bash migration script
-ENV FLYWAY_URL="jdbc:postgresql://$Hostname:$Port/$DBName"
-ENV FLYWAY_USERNAME="$Username"
-ENV FLYWAY_PASSWORD="$Password"
-ENV FLYWAY_SCHEMAS="$Schema"
+
+ENV Hostname=""
+ENV Port=""
+ENV DBName=""
+ENV FLYWAY_USERNAME=""
+ENV FLYWAY_PASSWORD=""
+ENV FLYWAY_SCHEMAS=""
 
 #Copy the migration script fom local to container
 COPY ./sql_versions /flyway/migrations/
-ENTRYPOINT exec flyway migrate -url="${FLYWAY_URL}" -defaultSchema=${FLYWAY_SCHEMAS} -user="${FLYWAY_USERNAME}" -password="${FLYWAY_PASSWORD}" -locations="filesystem:/flyway/migrations" -connectRetries=60 -outputType=json
-
-
-
+ENTRYPOINT exec flyway migrate -url="jdbc:postgresql://${Hostname}:${Port}/${DBName}" -defaultSchema=${FLYWAY_SCHEMAS} -user="${FLYWAY_USERNAME}" -password="${FLYWAY_PASSWORD}" -locations="filesystem:/flyway/migrations" -connectRetries=60 -outputType=json
