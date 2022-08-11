@@ -1,21 +1,16 @@
 version: '3'
 services:
   flyway:
-    image: flyway/flyway:9.0.0
-    command: -configFiles=/flyway/conf/flyway.config -locations=filesystem:/flyway/sql -connectRetries=60 -outputType=json  migrate 
-    volumes:
-      - ./sql_versions:/flyway/sql
-      - ./docker-flyway.config:/flyway/conf/flyway.config
+    image: info7205group4/db:flyway
     environment:
     - FLYWAY_URL=jdbc:postgresql://${Hostname}:${Port}/${DBName}
     - FLYWAY_USER=${Username}
     - FLYWAY_PASSWORD=${Password}
     - FLYWAY_SCHEMAS=${Schema}
-    
     depends_on:
       - postgres
   postgres:
-    image: postgres:14.4-alpine
+    image: info7205group4/db:postgres_database
     restart: always
     ports:
     - "5432:5432"
