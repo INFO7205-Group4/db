@@ -14,3 +14,4 @@ ENTRYPOINT exec flyway migrate -url="$FLYWAY_URL" -defaultSchema=${FLYWAY_SCHEMA
 
 
 
+
