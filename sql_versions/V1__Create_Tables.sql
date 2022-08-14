@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS Users(
    EmailValidated  Boolean     default false,
    EmailSentTime   TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
    Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL
+   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	confirmationEmailValidated Boolean     default false
 );
 
 /*
@@ -61,13 +62,13 @@ UserID - foreign key
 */ 
 CREATE TABLE IF NOT EXISTS List(
    List_Id SERIAL PRIMARY KEY,
-   List_Name     varchar(20),
-   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   listName     varchar(20),
+   createdAtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   updatedAtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
    UserId INT NOT NULL,
    CONSTRAINT fk_user
       FOREIGN KEY(userid) 
-	  REFERENCES users(userid)  ON DELETE CASCADE ON UPDATE CASCADE
+	  REFERENCES todo.users(userid)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -100,17 +101,18 @@ List_Id - Foreign key
 */ 
 CREATE TABLE IF NOT EXISTS Task(
    Task_Id SERIAL PRIMARY KEY,
-   Task_Summary varchar(50),
-   Task_Name varchar(20) NOT NULL ,
-   DueDate  TIMESTAMP WITH TIME ZONE,
-   Task_Priority SMALLINT default 0 check (Task_Priority in (0,1,2)),
-   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   taskSummary varchar(50),
+   taskName varchar(20) NOT NULL ,
+   dueDate  TIMESTAMP WITH TIME ZONE,     
+   taskPriority SMALLINT default 0 check (taskPriority in (0,1,2)),
+   createdAtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   updatedAtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
    List_Id INT NOT NULL,
    CONSTRAINT fk_list
       FOREIGN KEY(List_Id) 
-	  REFERENCES List(List_Id) ON DELETE CASCADE ON UPDATE CASCADE,
-   Task_State INT default 0 check (Task_State in (0, 1,2))
+	  REFERENCES todo.List(List_Id) ON DELETE CASCADE ON UPDATE CASCADE,
+   taskState SMALLINT default 0 check (taskState in (0, 1,2)),
+	tags bytea
 );
 
 /*
@@ -134,13 +136,14 @@ Task_Id - Foreignkey
 */ 
 CREATE TABLE IF NOT EXISTS Attachment(
    Attachment_Id SERIAL PRIMARY KEY,
-   Attachment_Name varchar(20)    NOT NULL,
-   Attached_AtTime  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-   Attachment_Size SMALLINT NOT NULL check (Attachment_Size > 0 AND Attachment_Size <= 10000),
-   Attachment_File bytea NOT NULL ,
+   attachmentName varchar(50)    NOT NULL,
+   attachedAtTime  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   attachmentSize BIGINT NOT NULL,
+   attachmentFile bytea NOT NULL ,
+contentType varchar(255)    NOT NULL,
    Task_Id INT NOT NULL,
       FOREIGN KEY(Task_Id) 
-	  REFERENCES Task(Task_Id) ON DELETE CASCADE ON UPDATE CASCADE
+	  REFERENCES todo.Task(Task_Id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 /*
@@ -165,25 +168,13 @@ User_Id - Foreignkey
 */ 
 CREATE TABLE IF NOT EXISTS Tag(
    Tag_Id SERIAL PRIMARY KEY,
-   Tag_Name varchar(20)    NOT NULL,
-   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   tagName varchar(20)    NOT NULL,
+   createdAtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   updatedAtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
    UserId INT NOT NULL,
    CONSTRAINT fk_tag
       FOREIGN KEY(UserId) 
-	  REFERENCES Users(UserId) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-/*
-Object: Table to link task and tag
-Script Date: July 25, 2022
-Description: This table links task id with tag id
-(Max limit 10 per task)
-*/ 
-CREATE TABLE  IF NOT EXISTS task_tag (
-  Task_Id int NOT NULL REFERENCES Task (Task_Id) ON UPDATE CASCADE ON DELETE CASCADE
-, Tag_Id int NOT NULL REFERENCES Tag (Tag_Id) ON UPDATE CASCADE ON DELETE CASCADE
-, CONSTRAINT task_tag_pkey PRIMARY KEY (Task_Id, Tag_Id)
+	  REFERENCES todo.Users(UserId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 /*
@@ -209,12 +200,12 @@ Task_Id - Foreignkey
 CREATE TABLE IF NOT EXISTS Comment(
    Comment_Id SERIAL PRIMARY KEY,
    Comment varchar(150)  NOT NULL,
-   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   CreatedAtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   UpdatedAtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
    Task_Id INT NOT NULL,
    CONSTRAINT fk_comment
       FOREIGN KEY(Task_Id) 
-	  REFERENCES Task(Task_Id) ON DELETE CASCADE ON UPDATE CASCADE
+	  REFERENCES todo.Task(Task_Id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 /*
@@ -239,11 +230,11 @@ Task_Id - Foreignkey
 */ 
 CREATE TABLE IF NOT EXISTS Reminder(
    Reminder_Id SERIAL PRIMARY KEY,
-   Reminder_DateTime  TIMESTAMP WITH TIME ZONE  NOT NULL,
-   Created_AtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-   Updated_AtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   reminderDateTime  TIMESTAMP WITH TIME ZONE  NOT NULL,
+   createdAtTime  TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   updatedAtTime   TIMESTAMP WITH TIME ZONE   DEFAULT CURRENT_TIMESTAMP NOT NULL,
    Task_Id INT NOT NULL,
    CONSTRAINT fk_reminder
       FOREIGN KEY(Task_Id) 
-	  REFERENCES Task(Task_Id) ON DELETE CASCADE ON UPDATE CASCADE
+	  REFERENCES todo.Task(Task_Id) ON DELETE CASCADE ON UPDATE CASCADE
 );
